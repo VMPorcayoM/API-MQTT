@@ -1,0 +1,29 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "API for upload and push images to be deplayed on clients MQTT",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "API-MQTT-Server"
+  },
+  "keywords": [
+    "MQQT",
+    "HTTP",
+    "API",
+    "Server"
+  ],
+  "author": "Victor Miguel Porcayo",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/storage-blob": "^12.27.0",
+    "body-parser": "^2.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mqtt": "^5.10.4",
+    "multer": "^1.4.5-lts.2"
+  }
+}
