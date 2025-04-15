@@ -4,6 +4,7 @@
   "description": "API for upload and push images to be deplayed on clients MQTT",
   "main": "app.js",
   "scripts": {
+    "start":"node app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

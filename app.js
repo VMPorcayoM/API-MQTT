@@ -25,6 +25,7 @@ mqttClient.on("connect", () => {
 // );
 
 app.post("/upload", async (req, res) => {
+  res.json({ ok: true});
   const {publicUrl} = req.body;
   const blobName = `${Date.now()}`;
   // const blockBlobClient = containerClient.getBlockBlobClient(blobName);
