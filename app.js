@@ -1,45 +1,50 @@
-require("dotenv").config();
 const express = require("express");
+require('dotenv').config();
+const app = express();
 const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 const mqtt = require("mqtt");
 const { BlobServiceClient } = require("@azure/storage-blob");
-const path = require("path");
 const fs = require("fs");
 const bodyParser = require("body-parser");
-const app = express();
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-const upload = multer({ dest: "uploads/" });
 
 const mqttClient = mqtt.connect(process.env.MQTT_BROKER);
 mqttClient.on("connect", () => {
-  console.log("🟢 Conectado al broker MQTT");
+  console.log("🟢 Conectado al broker MQTT: "+process.env.MQTT_BROKER);
 });
 
-// // Azure Blob config
-// const blobServiceClient = BlobServiceClient.fromConnectionString(
-//   process.env.AZURE_STORAGE_CONNECTION_STRING
-// );
-// const containerClient = blobServiceClient.getContainerClient(
-//   process.env.AZURE_CONTAINER
-// );
-
-app.post("/upload", async (req, res) => {
-  res.json({ ok: true});
-  const {publicUrl} = req.body;
-  const blobName = `${Date.now()}`;
-  // const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+// Azure Blob config
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  process.env.AZURE_STORAGE_CONNECTION_STRING
+);
+const containerClient = blobServiceClient.getContainerClient(
+  process.env.AZURE_CONTAINER
+);
+app.get("/", (req, res)=>res.json({message:'It is alive!'}));
+app.post("/upload",upload.single("image"), async (req, res) => {
+  const file = req.file;
+  if (!file) {
+    return res.status(400).send("No se adjuntó ninguna imagen");
+  }
+  const blobName = `${Date.now()}_${file.originalname}`;
+  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
   try {
-    // const uploadBlobResponse = await blockBlobClient.uploadFile(file.path);
-    // const publicUrl = `${blockBlobClient.url}`;
+    await blockBlobClient.uploadFile(file.path, {
+      blobHTTPHeaders: {
+        blobContentType: file.mimetype, // <-- aquí se asigna el tipo real
+      },
+    });
+    const publicUrl = `${blockBlobClient.url}`;
 
-    // console.log("📤 Imagen subida a:", publicUrl);
 
     mqttClient.publish(process.env.MQTT_TOPIC, publicUrl);
     console.log("🚀 URL publicada en MQTT:", process.env.MQTT_TOPIC);
 
-    // fs.unlinkSync(file.path); // borrar archivo local
+    fs.unlinkSync(file.path); // borrar archivo local
 
     res.json({ ok: true, imageUrl: publicUrl});
   } catch (err) {
