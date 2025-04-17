@@ -1,7 +1,31 @@
 const express = require("express");
 require('dotenv').config();
-const app = express();
 const multer = require("multer");
+const mqtt = require("mqtt");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const { BlobServiceClient } = require("@azure/storage-blob");
+const { generateSasUrl } = require("./services/services");
+
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// 🔐 Configuración segura para EMQX Cloud
+const mqttOptions = {
+  username: process.env.MQTT_USER,
+  password: process.env.MQTT_PASS,
+};
+// Conexión segura TLS
+const mqttClient = mqtt.connect(`${process.env.MQTT_BROKER}":"${process.env.MQTT_PORT}`, mqttOptions);
+
+mqttClient.on("connect", () => {
+  console.log("🟢 Conectado a broker");
+});
+mqttClient.on("error", (err) => {
+  console.error("❌ Error de conexión MQTT:", err.message);
+});
+
 const upload = multer({ 
   dest: "uploads/", 
   limits: { fileSize: 4 * 1024 * 1024 }, // 5MB
@@ -9,19 +33,6 @@ const upload = multer({
     if (!file.mimetype.startsWith("image/")) return cb(null, false);
     cb(null, true);
   }
-});
-const mqtt = require("mqtt");
-const { BlobServiceClient } = require("@azure/storage-blob");
-const fs = require("fs");
-const bodyParser = require("body-parser");
-const { generateSasUrl } = require("./services/services");
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-const mqttClient = mqtt.connect(process.env.MQTT_BROKER);
-mqttClient.on("connect", () => {
-  console.log("🟢 Conectado al broker MQTT: "+process.env.MQTT_BROKER);
 });
 
 // Azure Blob config
@@ -31,7 +42,9 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(
 const containerClient = blobServiceClient.getContainerClient(
   process.env.AZURE_CONTAINER
 );
+
 app.get("/", (req, res)=>res.json({message:'It is alive!'}));
+
 app.post("/upload",upload.single("image"), async (req, res) => {
   const file = req.file;
   if (!file)

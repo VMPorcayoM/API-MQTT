@@ -1,7 +1,7 @@
-import { BlobSASPermissions, generateBlobSASQueryParameters, StorageSharedKeyCredential } from "@azure/storage-blob";
+const { BlobSASPermissions, generateBlobSASQueryParameters, StorageSharedKeyCredential } = require("@azure/storage-blob");
 
 
-export function generateSasUrl(containerName, blobName, expiresInMinutes = 1440) {
+function generateSasUrl(containerName, blobName, expiresInMinutes = 720) {
       const sharedKeyCredential = new StorageSharedKeyCredential(
         process.env.AZURE_STORAGE_ACCOUNT_NAME,
         process.env.AZURE_STORAGE_ACCOUNT_KEY
@@ -20,3 +20,6 @@ export function generateSasUrl(containerName, blobName, expiresInMinutes = 1440)
       const url = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
       return url;
 }
+module.exports = {
+  generateSasUrl,
+};
