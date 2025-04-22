@@ -28,7 +28,7 @@ mqttClient.on("error", (err) => {
 
 const upload = multer({ 
   dest: "uploads/", 
-  limits: { fileSize: 4 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 1 * 1024 * 1024 }, // 1MB
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith("image/")) return cb(null, false);
     cb(null, true);
@@ -51,7 +51,7 @@ app.post("/upload",upload.single("image"), async (req, res) => {
     return res.status(400).send("No se adjuntó ninguna imagen");
   if (!file.mimetype.startsWith("image/"))
     return res.status(400).send("Solo se permiten imágenes");
-  if (file.size > 2 * 1024 * 1024)
+  if (file.size > 1 * 1024 * 1024)
     return res.status(400).send("La imagen es demasiado grande");
 
   const blobName = `${Date.now()}_${file.originalname}`;

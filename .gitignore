@@ -136,3 +136,4 @@ dist
 .pnp.*
 .env
 uploads/
+.DS_Store

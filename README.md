@@ -1,20 +1,24 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# 📸 Image Uploader with Azure Blob Storage & MQTT Integration
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+This is a lightweight Express API that allows uploading images, storing them in **Azure Blob Storage**, and publishing their access links to an **MQTT topic** (e.g., using EMQX Cloud). It’s ideal for IoT scenarios where devices send captured images to the cloud and share their links over MQTT.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+---
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## 🚀 Features
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+- ✅ Upload images using `multipart/form-data`
+- ☁️ Store images in Azure Blob Storage
+- 🔐 Generate temporary access links (SAS URLs)
+- 📡 Publish URLs to an MQTT topic
+- 🧼 Automatically delete local files after uploading
+- 🛡️ File validation (only image types, max 1MB)
+
+---
+
+## 📦 Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/VMPorcayoM/API-MQTT.git
+cd API-MQTT
