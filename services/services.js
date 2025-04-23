@@ -11,8 +11,8 @@ function generateSasUrl(containerName, blobName, expiresInMinutes = 720) {
         containerName,
         blobName,
         permissions: BlobSASPermissions.parse("r"), // solo lectura
-        startsOn: new Date(),
-        expiresOn: new Date(new Date().valueOf() + expiresInMinutes * 60 * 1000),
+        // startsOn: new Date(),
+        // expiresOn: new Date(new Date().valueOf() + expiresInMinutes * 60 * 1000),
       };
     
       const sasToken = generateBlobSASQueryParameters(sasOptions, sharedKeyCredential).toString();
