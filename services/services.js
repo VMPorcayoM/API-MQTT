@@ -1,18 +1,21 @@
 const { BlobSASPermissions, generateBlobSASQueryParameters, StorageSharedKeyCredential } = require("@azure/storage-blob");
 
 
-function generateSasUrl(containerName, blobName, expiresInMinutes = 720) {
+function generateSasUrl(containerName, blobName, expiresInDays = 365) {
       const sharedKeyCredential = new StorageSharedKeyCredential(
         process.env.AZURE_STORAGE_ACCOUNT_NAME,
         process.env.AZURE_STORAGE_ACCOUNT_KEY
       );
+      const now = new Date();
+      const expiresOn = new Date(now);
+      expiresOn.setDate(now.getDate() + expiresInDays); // suma 365 días
     
       const sasOptions = {
         containerName,
         blobName,
         permissions: BlobSASPermissions.parse("r"), // solo lectura
-        startsOn: new Date(),
-        expiresOn: new Date(new Date().valueOf() + expiresInMinutes * 60 * 1000),
+        startsOn: now,
+        expiresOn,
       };
     
       const sasToken = generateBlobSASQueryParameters(sasOptions, sharedKeyCredential).toString();
